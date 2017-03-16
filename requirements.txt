@@ -1,1 +1,1 @@
-meme-maker>=0.0.5 --install-option='--setup-type=base'
+meme-maker>=0.2[serverless]
