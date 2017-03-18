@@ -44,5 +44,9 @@ resources:
           IndexDocument: index.html
           ErrorDocument: error.html
 
+package:
+  exclude:
+    - node_modules/**
+
 plugins:
   - serverless-python-requirements
