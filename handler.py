@@ -19,22 +19,37 @@ def get_value_from_command(args, key):
     except:
         return None, args
 
-def response(text, response_url=None):
-    data = {
-        "response_type": "in_channel",
-        "text": text
-    }
-    headers = {'Content-Type': 'application/json'}
 
-    if response_url:
-        r = requests.post(response_url, data=json.dumps(data), headers=headers)
-        return r.text
+def prepare_response_content(text, public):
+    response = {}
 
-    return {
-        'statusCode': '200',
-        'body': json.dumps(data),
-        'headers': headers
-    }
+    data = {}
+    if text:
+        data['text'] = text
+    if public:
+        data['response_type'] = 'in_channel'
+    response['body'] = json.dumps(data)
+
+    response['headers'] = {'Content-Type': 'application/json'}
+    response['statusCode'] = 200
+
+    return response
+
+
+def quick_response(text, public=False):
+    return prepare_response_content(text, public)
+
+
+def delayed_response(text, response_url=None, public=False):
+    response = prepare_response_content(text, public)
+
+    r = requests.post(
+        response_url,
+        data=response['body'],
+        headers=response['headers']
+    )
+
+    return r.text
 
 
 def handler(event, context):
@@ -55,7 +70,8 @@ def handler(event, context):
     print text
 
     if not template and not url:
-        return response('no parameters no meme no kek')
+        return quick_response('no parameters no meme no kek', public=True)
+    delayed_response(None, response_url, public=True)
 
     meme = Meme(logger, template, url, text)
     meme_path = meme.make_meme(bucket)
@@ -63,4 +79,4 @@ def handler(event, context):
     meme_url = 'https://{}.s3.amazonaws.com/{}'.format(bucket, meme_path)
     response_text = "@{}: here's your meme: {}".format(user_name, meme_url)
 
-    return response(response_text, response_url)
+    return delayed_response(response_text, response_url, public=True)
