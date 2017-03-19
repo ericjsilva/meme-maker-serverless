@@ -2,7 +2,7 @@
 
 set -e
 
-npm install --save serverless-python-requirements@2.0.0
-npm install -g serverless@1.5.0
+yarn add serverless-python-requirements@2.0.0
+yarn global add serverless@1.5.0
 
 sls deploy

@@ -2,13 +2,27 @@ sudo: required
 
 language: node_js
 
+cache:
+  yarn: true
+  directories:
+    - node_modules
+
+addons:
+  apt:
+    sources:
+      - sourceline: 'deb https://dl.yarnpkg.com/debian/ stable main'
+        key_url: 'https://dl.yarnpkg.com/debian/pubkey.gpg'
+    packages:
+      - yarn
+
 python:
   - "2.7"
 
 node_js:
   - "4.2.6"
 
-install: sudo pip install --upgrade pip
+install:
+  - pip install --upgrade pip
 
 script: echo
 
