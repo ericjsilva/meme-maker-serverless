@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import datetime
 import json
 import logging
 import os
@@ -9,6 +10,7 @@ from urlparse import parse_qs
 from meme_maker.meme import Meme
 
 LOG_FORMAT = "%(levelname)9s [%(asctime)-15s] %(name)s - %(message)s"
+START_TIME = datetime.datetime.now()
 
 
 def get_value_from_command(args, key):
@@ -36,11 +38,21 @@ def prepare_response_content(text, public):
     return response
 
 
-def quick_response(text, public=False):
+def response(text, response_url=None, public=False):
+    timeout_threshold = 2.5
+    running_time = (datetime.datetime.now()-START_TIME).total_seconds()
+
+    if running_time > timeout_threshold:
+        return delayed_response(text, response_url, public)
+
+    return quick_response(text, public)
+
+
+def quick_response(text, public):
     return prepare_response_content(text, public)
 
 
-def delayed_response(text, response_url=None, public=False):
+def delayed_response(text, response_url, public):
     response = prepare_response_content(text, public)
 
     r = requests.post(
@@ -70,8 +82,8 @@ def handler(event, context):
     print text
 
     if not template and not url:
-        return quick_response('no parameters no meme no kek', public=True)
-    delayed_response(None, response_url, public=True)
+        return response('no parameters no meme no kek',
+                        response_url, public=True)
 
     meme = Meme(logger, template, url, text)
     meme_path = meme.make_meme(bucket)
@@ -79,4 +91,4 @@ def handler(event, context):
     meme_url = 'https://{}.s3.amazonaws.com/{}'.format(bucket, meme_path)
     response_text = "@{}: here's your meme: {}".format(user_name, meme_url)
 
-    return delayed_response(response_text, response_url, public=True)
+    return response(response_text, response_url, public=True)
