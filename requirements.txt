@@ -1,1 +1,2 @@
-meme-maker>=0.2[serverless]
+#meme-maker>=0.2[serverless]
+https://github.com/jacekszubert/meme-maker/archive/master.zip
