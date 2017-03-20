@@ -4,16 +4,43 @@ import datetime
 import json
 import logging
 import os
+import sys
 import requests
 
 from urlparse import parse_qs
 from meme_maker.meme import Meme
 
-LOG_FORMAT = "%(levelname)9s [%(asctime)-15s] %(name)s - %(message)s"
+LOG_FORMAT = "%(levelname)9s [%(asctime)-15s] %(message)s"
 START_TIME = datetime.datetime.now()
+TIMEOUT_THRESHOLD = 2.5
+
+
+def setup_logger():
+    """
+    Remove default AWS Lambda logging handlers and add new one with
+    defined format.
+    """
+
+    logger = logging.getLogger()
+
+    for handler in logger.handlers:
+        logger.removeHandler(handler)
+
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setFormatter(logging.Formatter(LOG_FORMAT))
+    logger.addHandler(handler)
+
+    logger.setLevel(logging.INFO)
+
+    return logger
 
 
 def get_value_from_command(args, key):
+    """
+    Extract value of given key from list-formatted command.
+    Return both value and list command shorter of wanted key:value.
+    """
+
     try:
         value = next(arg for arg in args if arg.startswith('%s:' % key))
         args.remove(value)
@@ -23,6 +50,10 @@ def get_value_from_command(args, key):
 
 
 def prepare_response_content(text, public):
+    """
+    Return formatted data and parameters required to send back http request.
+    """
+
     response = {}
 
     data = {}
@@ -39,20 +70,28 @@ def prepare_response_content(text, public):
 
 
 def response(text, response_url=None, public=False):
-    timeout_threshold = 2.5
+    """
+    Based on execution time decide and proceed with regular
+    or delayed response/
+    """
+
     running_time = (datetime.datetime.now()-START_TIME).total_seconds()
 
-    if running_time > timeout_threshold:
+    if running_time > TIMEOUT_THRESHOLD:
         return delayed_response(text, response_url, public)
 
     return quick_response(text, public)
 
 
 def quick_response(text, public):
+    """Quick response by return to Api Gateway."""
+
     return prepare_response_content(text, public)
 
 
 def delayed_response(text, response_url, public):
+    """Delayed response by request to Slack endpoint."""
+
     response = prepare_response_content(text, public)
 
     r = requests.post(
@@ -65,10 +104,11 @@ def delayed_response(text, response_url, public):
 
 
 def handler(event, context):
-    logging.basicConfig(format=LOG_FORMAT, level=logging.INFO)
-    logger = logging.getLogger('meme')
+    """AWS Lambda handler"""
 
-    print event
+    logger = setup_logger()
+
+    logger.info(event)
 
     bucket = os.environ['bucket']
     params = parse_qs(event['body'])
@@ -79,7 +119,6 @@ def handler(event, context):
     url, command = get_value_from_command(command, 'url')
     template, command = get_value_from_command(command, 'meme')
     text = ' '.join(command)
-    print text
 
     if not template and not url:
         return response('no parameters no meme no kek',
