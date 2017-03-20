@@ -1,2 +1,7 @@
 #meme-maker>=0.2[serverless]
+
+#temporary until CD to pypi
 https://github.com/jacekszubert/meme-maker/archive/master.zip
+click
+Pillow
+requests
