@@ -5,3 +5,4 @@ https://github.com/jacekszubert/meme-maker/archive/master.zip
 click
 Pillow
 requests
+pyyaml
