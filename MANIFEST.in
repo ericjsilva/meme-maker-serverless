@@ -1,0 +1,3 @@
+include meme_maker/assets/*.ttf
+include meme_maker/plugins/*/plugin.yaml
+include requirements/*.txt

@@ -1,14 +1,14 @@
-# meme-maker [![Build Status](https://travis-ci.org/jacekszubert/meme-maker-serverless.svg?branch=master)](https://travis-ci.org/jacekszubert/meme-maker-serverless)
-Serverless API and Slack bot deployment for [meme-generator](https://github.com/jacekszubert/meme-maker).
+# meme-maker [![Build Status](https://travis-ci.org/ericjsilva/meme-maker-serverless.svg?branch=master)](https://travis-ci.org/ericjsilva/meme-maker-serverless)
+Serverless API and Slack bot deployment for meme generator.
 
 ## Get it running
 If you're here you're just a few minutes away from having your own meme generator.
 
 #### Install dependencies
-Requires node>=4.
+Requires node>=6.10
 ```bash
-npm install --save serverless-python-requirements@2.0.0
-npm install -g serverless@1.5.0
+npm install --save serverless-python-requirements@4.2.1
+npm install -g serverless@1.31.0
 ```
 
 #### Verify your configuration

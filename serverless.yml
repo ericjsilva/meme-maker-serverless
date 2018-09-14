@@ -1,14 +1,14 @@
 service: meme-maker
 
 custom:
-  bucket: kekmeme  #must be aws wide unique
+  bucket: slack-memes  #must be aws wide unique
 
 provider:
   name: aws
-  runtime: python2.7
+  runtime: python3.6
   memorySize: 1024
-  timeout: 30
-  region: eu-west-1
+  timeout: 15
+  region: us-east-1
   #profile: #uncomment and set profile name if using non-default aws profile
 
   iamRoleStatements:
@@ -40,7 +40,7 @@ resources:
     MemeBucket:
       Type: AWS::S3::Bucket
       Properties:
-        AccessControl: PublicRead
+        AccessControl: Private
         BucketName: ${self:custom.bucket}
         WebsiteConfiguration:
           IndexDocument: index.html

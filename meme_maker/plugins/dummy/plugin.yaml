@@ -1,0 +1,8 @@
+name: 'dummy'
+version: '0.0.1'
+scm: 'http://github.com/mkasprzyk/meme-maker-blend-plugin.git'
+author: 'Maciej Kasprzyk'
+email: 'mkasprzyk@szy.fr'
+
+script: dummy.py
+handler: run
