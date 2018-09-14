@@ -22,9 +22,11 @@ node_js:
   - "6.10"
 
 install:
-  - pip install --upgrade pip
+  - pip install -r requirements/test.txt
 
-script: echo
+script:
+  - flake8 --exit-zero
+  - python setup.py test
 
 deploy:
   provider: script
